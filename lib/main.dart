@@ -105,7 +105,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   stopTimer();
                   toggleTimer();
                 },
-                child: Text(_isRunning ? 'ストップ' : 'スタート')),
+                child: Text(
+                  _isRunning ? 'ストップ' : 'スタート',
+                  style: TextStyle(
+                      color: _isRunning ? Colors.red : Colors.green,
+                      fontWeight: FontWeight.bold),
+                )),
             ElevatedButton(
                 onPressed: () {
                   resetTimer();
