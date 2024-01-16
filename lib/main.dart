@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import 'next_page.dart';
+import 'package:timer/next_page.dart';
+import 'package:timer/widgets/button/build_reset_button.dart';
+import 'package:timer/widgets/button/build_timer_button.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,12 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Timer',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'タイマー'),
     );
   }
 }
@@ -35,19 +35,89 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _second = 0;
+  int _milliSecond = 0;
   Timer? _timer;
   bool _isRunning = false;
 
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _second++;
-      });
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white10,
+      appBar: AppBar(
+        backgroundColor: Colors.white10,
+        title: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _buildTimeDisplay(),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              BuildTimerButton(
+                  text: _isRunning ? 'ストップ' : 'スタート',
+                  textColor: _isRunning ? Colors.red : Colors.green,
+                  buttonColor: Colors.white10,
+                  onPressedStart: toggleTimer,
+                  onPressedStop: stopTimer),
+              const SizedBox(
+                width: 4,
+              ),
+              BuildResetButton(
+                  text: 'リセット',
+                  buttonColor: Colors.white10,
+                  textColor: Colors.white70,
+                  onPressed: resetTimer),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeDisplay() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildTimeUnit(_formatMinute()),
+        _buildTimeUnit(':'),
+        _buildTimeUnit(_formatSecond()),
+        _buildTimeUnit('.'),
+        _buildTimeUnit(_formatMilliSecond()),
+      ],
+    );
+  }
+
+  Widget _buildTimeUnit(String timeUnit) {
+    return Text(
+      timeUnit,
+      style: const TextStyle(fontSize: 100, color: Colors.white),
+    );
+  }
+
+  String _formatMinute() {
+    int minutes = (_milliSecond / 6000).floor();
+    String minute = minutes.toString().padLeft(2, '0');
+    return minute;
+  }
+
+  String _formatSecond() {
+    int seconds = (_milliSecond / 100).floor() % 60;
+    String formattedSecond = seconds.toString().padLeft(2, '0');
+    return formattedSecond;
+  }
+
+  String _formatMilliSecond() {
+    String milliSeconds = (_milliSecond % 100).toString().padLeft(2, '0');
+    return milliSeconds;
   }
 
   void stopTimer() {
@@ -58,11 +128,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_isRunning) {
       _timer?.cancel();
     } else {
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
         setState(() {
-          _second++;
+          _milliSecond++;
         });
-        if (_second == 10) {
+        if (_milliSecond == 60000) {
           resetTimer();
           Navigator.push(
             context,
@@ -80,49 +150,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _timer?.cancel();
 
     setState(() {
-      _second = 0;
+      _milliSecond = 0;
       _isRunning = false;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              '$_second',
-              style: TextStyle(fontSize: 100),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  stopTimer();
-                  toggleTimer();
-                },
-                child: Text(
-                  _isRunning ? 'ストップ' : 'スタート',
-                  style: TextStyle(
-                      color: _isRunning ? Colors.red : Colors.green,
-                      fontWeight: FontWeight.bold),
-                )),
-            ElevatedButton(
-                onPressed: () {
-                  resetTimer();
-                },
-                child: const Text(
-                  'リセット',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ))
-          ],
-        ),
-      ),
-    );
   }
 }
