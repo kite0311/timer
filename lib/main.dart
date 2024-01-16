@@ -40,12 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isRunning = false;
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white10,
