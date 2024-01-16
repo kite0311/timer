@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           _milliSecond++;
         });
-        if (_milliSecond == 60000) {
+        if (_milliSecond == 6000) {
           resetTimer();
           Navigator.push(
             context,
