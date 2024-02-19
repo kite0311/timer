@@ -81,19 +81,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildTimeUnit(_formatMinute()),
-        _buildTimeUnit(':'),
-        _buildTimeUnit(_formatSecond()),
-        _buildTimeUnit('.'),
-        _buildTimeUnit(_formatMilliSecond()),
+        TimeUnit(timeUnit: _formatMinute()),
+        TimeUnit(timeUnit: ':'),
+        TimeUnit(timeUnit: _formatSecond()),
+        TimeUnit(timeUnit: '.'),
+        TimeUnit(timeUnit: _formatMilliSecond()),
       ],
-    );
-  }
-
-  Widget _buildTimeUnit(String timeUnit) {
-    return Text(
-      timeUnit,
-      style: const TextStyle(fontSize: 100, color: Colors.white),
     );
   }
 
@@ -147,5 +140,22 @@ class _MyHomePageState extends State<MyHomePage> {
       _milliSecond = 0;
       _isRunning = false;
     });
+  }
+}
+
+class TimeUnit extends StatelessWidget {
+  const TimeUnit({
+    super.key,
+    required this.timeUnit,
+  });
+
+  final String timeUnit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      timeUnit,
+      style: const TextStyle(fontSize: 100, color: Colors.white),
+    );
   }
 }
